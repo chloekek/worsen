@@ -64,8 +64,4 @@ sub include_macro
     $result;
 }
 
-for my $macro (keys %macros) {
-    print "--------\n";
-    print "$macro\n";
-    print include_macro($macro);
-}
+print include_macro('MAIN');
