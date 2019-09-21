@@ -3,3 +3,6 @@ or interpreter. Due to limitations, you have to ensure that your code is in
 certain lexical places to please the name resolution of the programming
 language. The solution to this is to write nice code instead, and automate
 the worsening. This technique is also known as literate programming.
+
+Worsen has only one dependency: a Perl 5 interpreter. This makes it easy to
+install and highly portable.

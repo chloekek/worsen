@@ -1,0 +1,57 @@
+#!/usr/bin/env perl
+
+use strict;
+use warnings;
+
+if (@ARGV == 0) {
+    print STDERR "Usage: $0 FILE [FILE ...]\n";
+    exit 1;
+}
+
+my %macros;
+
+for (@ARGV) {
+    open my $file, '<', $_
+        or die "Cannot open $_: $!";
+
+    # The name of the current macro, or undef if there is no current macro.
+    my $macro;
+
+    # The source lines of the current macro.
+    my @source;
+
+    # Loop through the file, keeping track of the current macro, and committing
+    # completed macros into the %macros hash.
+    while (<$file>) {
+
+        # A macro begin marker begins a new macro.
+        if (/^MACRO ([A-Za-z0-9_-]*)$/) {
+            die "Already in a macro definition of $macro" if defined $macro;
+            die "Redefinition of macro $1" if exists $macros{$1};
+            $macro = $1;
+            next;
+        }
+
+        # A macro end marker ends the current macro.
+        if (/^END MACRO$/) {
+            die "Not in a macro definition" unless defined $macro;
+            $macros{$macro} = [@source];
+            $macro = undef;
+            @source = ();
+            next;
+        }
+
+        # If we are currently define a macro, commit the line to the @source
+        # array so it can be included in the macro.
+        if (defined $macro) {
+            push @source, $_;
+            next;
+        }
+    }
+}
+
+for (keys %macros) {
+    print "--------\n";
+    print "$_\n";
+    print $_ for $macros{$_}->@*;
+}
