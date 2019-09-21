@@ -1,0 +1,5 @@
+Many programming languages require that you provide bad code to the compiler
+or interpreter. Due to limitations, you have to ensure that your code is in
+certain lexical places to please the name resolution of the programming
+language. The solution to this is to write nice code instead, and automate
+the worsening. This technique is also known as literate programming.
