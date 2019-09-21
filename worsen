@@ -56,12 +56,9 @@ for (@ARGV) {
 sub include_macro
 {
     my $macro = shift;
-    my $result = '';
     die "Including undefined macro $macro"
         unless exists $macros{$macro};
-    $result .= s/INCLUDE MACRO ($MACRO_NAME)/include_macro($1)/egr
-        for $macros{$macro}->@*;
-    $result;
+    join('', map(s/INCLUDE MACRO ($MACRO_NAME)/include_macro($1)/egr, $macros{$macro}->@*));
 }
 
 print include_macro('MAIN');
