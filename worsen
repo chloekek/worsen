@@ -8,6 +8,9 @@ if (@ARGV == 0) {
     exit 1;
 }
 
+my $MACRO_NAME = qr/[A-Za-z0-9_-]+/;
+
+# Mapping from macro names to arrays of lines.
 my %macros;
 
 for (@ARGV) {
@@ -25,7 +28,7 @@ for (@ARGV) {
     while (<$file>) {
 
         # A macro begin marker begins a new macro.
-        if (/^MACRO ([A-Za-z0-9_-]*)$/) {
+        if (/^MACRO ($MACRO_NAME)$/) {
             die "Already in a macro definition of $macro" if defined $macro;
             die "Redefinition of macro $1" if exists $macros{$1};
             $macro = $1;
@@ -50,8 +53,19 @@ for (@ARGV) {
     }
 }
 
-for (keys %macros) {
+sub include_macro
+{
+    my $macro = shift;
+    my $result = '';
+    die "Including undefined macro $macro"
+        unless exists $macros{$macro};
+    $result .= s/INCLUDE MACRO ($MACRO_NAME)/include_macro($1)/egr
+        for $macros{$macro}->@*;
+    $result;
+}
+
+for my $macro (keys %macros) {
     print "--------\n";
-    print "$_\n";
-    print $_ for $macros{$_}->@*;
+    print "$macro\n";
+    print include_macro($macro);
 }
